@@ -1,4 +1,6 @@
 % Cordic Implementation
+% Author: Arjun Marappa
+% Description: MATLAB Implementation of CORDIC as Digitally Controlled Oscillator. 
 
 clc
 clear all
@@ -9,42 +11,43 @@ fftsize = 65536*7;
 fsample = 100e3;
 fsignal = 10e3;
 frange = (-0.5:1/fftsize:0.5-1/fftsize)*fsample;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Generate I and Q ADC samples 
 [I, Q] = TestSigGen(fsignal,fsample,nsamples,0);
 
 Isample = fix(I*32767);
 Qsample = fix(Q*32767);
 x_in = (I+i*Q)*32767;
 
-% fileID = fopen('C:\Users\Nagarjun\Documents\MATLAB\Thesis\cordicI.txt', 'w+');%%%%%%%%%%
-% for i= 1:nsamples
-%     fprintf(fileID, '%d\n',int32(Isample));
-% end
-% fclose(fileID);
-% 
-% fileID = fopen('C:\Users\Nagarjun\Documents\MATLAB\Thesis\cordicQ.txt', 'w+');%%%%%%%%%%
-% for i= 1:nsamples
-%     fprintf(fileID, '%d\n',int32(Qsample));
-% end
-% fclose(fileID);
+% Store the Inputs to ease of signal generation in future development iteration
+fileID = fopen('C:\Users\Nagarjun\Documents\MATLAB\Thesis\cordicI.txt', 'w+');%%%%%%%%%%
+for i= 1:nsamples
+	fprintf(fileID, '%d\n',int32(Isample));
+end
+fclose(fileID); 
+fileID = fopen('C:\Users\Nagarjun\Documents\MATLAB\Thesis\cordicQ.txt', 'w+');%%%%%%%%%%
+for i= 1:nsamples
+     fprintf(fileID, '%d\n',int32(Qsample));
+end
+fclose(fileID);
 
-% figure('NumberTitle', 'off',...
-%         'Name', 'Received Signal');
-% plot(0:nsamples-1,x_in)
-% title('\bfReceived Signal')
-% xlabel('\bfTime')
-% ylabel('\bfMagnitude')
+figure('NumberTitle', 'off',...
+         'Name', 'Received Signal');
+plot(0:nsamples-1,x_in)
+title('\bfReceived Signal')
+xlabel('\bfTime')
+ylabel('\bfMagnitude')
 % 
-% SigSpec = fftshift(fft(x_in,fftsize));
-% figure
-% plot(frange,dB(psdg(SigSpec/max(SigSpec))));
-% title('\bfFrequency Specturm Received Signal')
-% xlabel('\bfFrequency')
-% ylabel('\bfMagnitude in dB')
-% ylim([-80,10])
-% grid on
-
-input_str = sprintf('Please enter a freq (less than %dHz) you want to generate',fsample);
+SigSpec = fftshift(fft(x_in,fftsize));
+figure
+plot(frange,dB(psdg(SigSpec/max(SigSpec))));
+title('\bfFrequency Specturm Received Signal')
+xlabel('\bfFrequency')
+ylabel('\bfMagnitude in dB')
+ylim([-80,10])
+grid on
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+input_str = sprintf('Please enter a freq (less than %dHz) you want to generate',fsample); % DCO tuning frequency
 NCO_Freq = input(input_str);
 
 % double values cannot represent all integers greater than 2^53 correctly
